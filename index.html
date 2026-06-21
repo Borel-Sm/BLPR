@@ -467,7 +467,7 @@ input[readonly] { opacity:.6; cursor:default; }
         </div>
         <div class="form-group">
           <label>Telefone</label>
-          <input type="text" id="forn-tel" placeholder="(00) 00000-0000">
+          <input type="text" id="forn-tel" placeholder="(00) 00000-0000" inputmode="numeric" maxlength="15">
         </div>
       </div>
       <div class="form-group"><label>Nome / Empresa</label><input type="text" id="forn-nome" placeholder="Nome do fornecedor"></div>
@@ -686,7 +686,7 @@ input[readonly] { opacity:.6; cursor:default; }
     <div class="modal-body">
       <input type="hidden" id="cli-edit-id">
       <div class="form-group"><label>Nome</label><input type="text" id="cli-nome" placeholder="Nome completo"></div>
-      <div class="form-group"><label>Telefone / WhatsApp</label><input type="text" id="cli-tel" placeholder="(00) 00000-0000"></div>
+      <div class="form-group"><label>Telefone / WhatsApp</label><input type="text" id="cli-tel" placeholder="(00) 00000-0000" inputmode="numeric" maxlength="15"></div>
       <div class="form-group"><label>Observacao</label><input type="text" id="cli-obs" placeholder="Informacoes adicionais"></div>
     </div>
     <div class="modal-footer">
@@ -1343,8 +1343,44 @@ function globalSearch(q){
   renderLotes();
 }
 
+// ── MASCARA DE TELEFONE ──────────────────────────────────────────
+// Suporta celular (11 digitos): (00) 00000-0000
+// e fixo (10 digitos):          (00) 0000-0000
+function mascaraTelefone(e){
+  const input = e.target;
+  let v = input.value.replace(/\D/g,'').slice(0,11); // so numeros, max 11
+  if(v.length === 0){ input.value=''; return; }
+  if(v.length <= 2){
+    input.value = '('+v;
+  } else if(v.length <= 6){
+    input.value = '('+v.slice(0,2)+') '+v.slice(2);
+  } else if(v.length <= 10){
+    // fixo: (00) 0000-0000
+    input.value = '('+v.slice(0,2)+') '+v.slice(2,6)+'-'+v.slice(6);
+  } else {
+    // celular: (00) 00000-0000
+    input.value = '('+v.slice(0,2)+') '+v.slice(2,7)+'-'+v.slice(7);
+  }
+}
+function bloquearLetras(e){
+  // permite: numeros, backspace, delete, tab, setas, home, end
+  const permitidos = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'];
+  if(permitidos.includes(e.key)) return;
+  if(!/^\d$/.test(e.key)) e.preventDefault();
+}
+function aplicarMascaraTel(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('input', mascaraTelefone);
+  el.addEventListener('keydown', bloquearLetras);
+  el.setAttribute('inputmode','numeric');
+  el.setAttribute('maxlength','15'); // (00) 00000-0000 = 15 chars
+}
+
 // ── INIT ─────────────────────────────────────────────────────────
 if(document.getElementById('cfg-minimo')) document.getElementById('cfg-minimo').value=db.config?.minimo||3;
+// Aplica mascara em todos os campos de telefone
+['forn-tel','cli-tel'].forEach(aplicarMascaraTel);
 renderDashboard();
 </script>
 </body>
