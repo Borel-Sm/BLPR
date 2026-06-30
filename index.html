@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BL Pratas — Controle de Estoque</title>
+<title>Controle de Estoque</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -17,11 +17,28 @@
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:14px;line-height:1.5}
 
+/* ── AUTH SCREEN */
+#auth-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+#auth-screen.hidden{display:none}
+.auth-bg-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 20%,rgba(192,192,192,.06),transparent 60%);pointer-events:none}
+.auth-card{position:relative;width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:32px 30px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.auth-logo{text-align:center;margin-bottom:22px}
+.auth-logo-mark{font-size:22px;font-weight:700;letter-spacing:.08em;background:linear-gradient(135deg,#fff 0%,#aaa 50%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.auth-logo-sub{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--silver-dk);margin-top:3px}
+.auth-tabs{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:22px}
+.auth-tab{flex:1;text-align:center;padding:9px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;background:var(--surface2);transition:all .15s}
+.auth-tab.active{color:#000;background:var(--silver)}
+.auth-panel{display:none}
+.auth-panel.active{display:block}
+.auth-error{display:none;background:rgba(192,57,43,.1);border-left:3px solid var(--danger);color:#e06050;font-size:12px;padding:9px 12px;border-radius:4px;margin-bottom:14px}
+.auth-error.show{display:block}
+.auth-foot{text-align:center;font-size:11px;color:var(--text-muted);margin-top:16px}
+
 /* ── SIDEBAR */
 #sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .25s ease}
-.logo-area{padding:26px 20px 22px;border-bottom:1px solid var(--border)}
-.logo-mark{font-size:21px;font-weight:700;letter-spacing:.08em;background:linear-gradient(135deg,#fff 0%,#aaa 50%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.logo-sub{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--silver-dk);margin-top:2px}
+.logo-area{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
+.logo-mark{font-size:18px;font-weight:700;letter-spacing:.04em;background:linear-gradient(135deg,#fff 0%,#aaa 50%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.25;word-break:break-word}
+.logo-sub{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--silver-dk);margin-top:4px}
 nav{flex:1;padding:10px 0;overflow-y:auto}
 .nav-section{padding:10px 20px 4px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--silver-dk)}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;color:var(--text-muted);font-size:13px;font-weight:400;border-left:2px solid transparent;transition:all .15s;user-select:none}
@@ -29,7 +46,12 @@ nav{flex:1;padding:10px 0;overflow-y:auto}
 .nav-item.active{color:var(--silver-lt);border-left-color:var(--silver);background:rgba(192,192,192,.07);font-weight:500}
 .nav-item svg{flex-shrink:0;opacity:.7}
 .nav-item.active svg{opacity:1}
-.sidebar-footer{padding:14px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--silver-dk)}
+.sidebar-footer{padding:12px 20px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--silver-dk)}
+.sidebar-user{display:flex;flex-direction:column;gap:1px;margin-bottom:10px}
+.sidebar-user-name{color:var(--silver-lt);font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-sub{color:var(--text-muted);font-size:10.5px}
+.btn-sair{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:7px;border-radius:var(--radius);background:rgba(192,57,43,.12);color:#e06050;border:1px solid rgba(192,57,43,.22);font-family:inherit;font-size:12px;cursor:pointer;transition:all .15s}
+.btn-sair:hover{background:rgba(192,57,43,.22)}
 
 /* ── MAIN */
 #main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
@@ -248,12 +270,55 @@ input[readonly]{opacity:.55;cursor:default}
 </style>
 </head>
 <body>
+
+<!-- ═══ AUTH SCREEN ═══ -->
+<div id="auth-screen">
+  <div class="auth-bg-glow"></div>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">CONTROLE DE ESTOQUE</div>
+      <div class="auth-logo-sub">Acesso da Empresa</div>
+    </div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login-btn" onclick="switchAuthTab('login')">Entrar</div>
+      <div class="auth-tab" id="tab-register-btn" onclick="switchAuthTab('register')">Cadastrar Empresa</div>
+    </div>
+
+    <div class="auth-error" id="auth-error"></div>
+
+    <!-- LOGIN -->
+    <div class="auth-panel active" id="auth-login">
+      <div class="form-group"><label>Usuario</label><input type="text" id="login-usuario" placeholder="Seu usuario" autocomplete="username"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')fazerLogin()"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="fazerLogin()">Entrar</button>
+      <div class="auth-foot" id="auth-login-foot">Nenhuma empresa cadastrada neste dispositivo ainda.</div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-panel" id="auth-register">
+      <div class="form-group"><label>Nome completo da Empresa</label><input type="text" id="reg-empresa" placeholder="Ex: BL Pratas Comercio Ltda"></div>
+      <div class="form-row">
+        <div class="form-group"><label>CNPJ</label><input type="text" id="reg-cnpj" placeholder="00.000.000/0000-00" maxlength="18"></div>
+        <div class="form-group"><label>CPF do responsavel</label><input type="text" id="reg-cpf" placeholder="000.000.000-00" maxlength="14"></div>
+      </div>
+      <div class="form-group"><label>Nome completo do dono(a) da empresa</label><input type="text" id="reg-dono" placeholder="Ex: Maria da Silva"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Usuario</label><input type="text" id="reg-usuario" placeholder="Crie um usuario" autocomplete="username"></div>
+        <div class="form-group"><label>Senha</label><input type="password" id="reg-senha" placeholder="Crie uma senha" autocomplete="new-password"></div>
+      </div>
+      <div class="form-group"><label>Confirmar Senha</label><input type="password" id="reg-senha2" placeholder="Repita a senha" autocomplete="new-password"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="fazerRegistro()">Cadastrar e Entrar</button>
+      <div class="auth-foot">Esses dados sao usados para identificar sua empresa no sistema e nos recibos gerados.</div>
+    </div>
+  </div>
+</div>
+
 <div class="overlay-bg" id="overlay-bg" onclick="closeSidebar()"></div>
 
 <!-- ═══ SIDEBAR ═══ -->
 <aside id="sidebar">
   <div class="logo-area">
-    <div class="logo-mark">BL PRATAS</div>
+    <div class="logo-mark" id="app-logo-name">CONTROLE DE ESTOQUE</div>
     <div class="logo-sub">Controle de Estoque</div>
   </div>
   <nav>
@@ -296,7 +361,16 @@ input[readonly]{opacity:.55;cursor:default}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configuracoes
     </div>
   </nav>
-  <div class="sidebar-footer">v4.0 &mdash; BL Pratas</div>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-user-name" id="sidebar-user-name">—</div>
+      <div class="sidebar-user-sub" id="sidebar-user-sub">—</div>
+    </div>
+    <button class="btn-sair" onclick="fazerLogout()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sair da conta
+    </button>
+  </div>
 </aside>
 
 <!-- ═══ MAIN ═══ -->
@@ -402,7 +476,7 @@ input[readonly]{opacity:.55;cursor:default}
         <button class="btn btn-primary" onclick="abrirModalVenda()">+ Registrar Venda</button>
       </div>
       <div class="card">
-        <table><thead><tr><th>Data</th><th>Cliente</th><th>Unidade</th><th>Produto</th><th>Preco</th><th>Desc</th><th>Total</th><th>Lucro</th></tr></thead>
+        <table><thead><tr><th>Data</th><th>Cliente</th><th>Unidade</th><th>Produto</th><th>Preco</th><th>Desc</th><th>Total</th><th>Lucro</th><th>Acoes</th></tr></thead>
         <tbody id="tbody-vendas"></tbody></table>
         <div id="vendas-empty" class="empty-state" style="display:none"><p>Nenhuma venda registrada.</p></div>
       </div>
@@ -599,13 +673,28 @@ input[readonly]{opacity:.55;cursor:default}
             <button class="btn btn-primary btn-sm" onclick="salvarConfig()">Salvar</button>
           </div>
         </div>
-        <div class="danger-zone">
-          <div class="danger-zone-title">Zona de Perigo</div>
-          <div class="danger-item"><div><div class="danger-item-label">Limpar movimentacoes</div><div class="danger-item-sub">Remove o historico de entradas/saidas</div></div><button class="btn btn-danger btn-sm" onclick="limpar('movimentacoes')">Limpar</button></div>
-          <div class="danger-item"><div><div class="danger-item-label">Limpar vendas</div><div class="danger-item-sub">Remove o historico de vendas</div></div><button class="btn btn-danger btn-sm" onclick="limpar('vendas')">Limpar</button></div>
-          <div class="danger-item"><div><div class="danger-item-label">Limpar gastos</div><div class="danger-item-sub">Remove todos os lancamentos</div></div><button class="btn btn-danger btn-sm" onclick="limpar('gastos')">Limpar</button></div>
-          <div class="danger-item"><div><div class="danger-item-label">Apagar todos os dados</div><div class="danger-item-sub">Reseta completamente o sistema</div></div><button class="btn btn-danger btn-sm" onclick="resetTotal()">Apagar tudo</button></div>
+        <div class="card"><div class="card-header"><span class="card-title">Dados da Empresa</span></div>
+          <div style="padding:18px">
+            <div class="form-group"><label>Nome da Empresa</label><input type="text" id="cfg-empresa-nome"></div>
+            <div class="form-row">
+              <div class="form-group"><label>CNPJ</label><input type="text" id="cfg-empresa-cnpj" maxlength="18"></div>
+              <div class="form-group"><label>CPF do responsavel</label><input type="text" id="cfg-empresa-cpf" maxlength="14"></div>
+            </div>
+            <div class="form-group"><label>Nome do dono(a)</label><input type="text" id="cfg-empresa-dono"></div>
+            <div class="form-row">
+              <div class="form-group"><label>Telefone da empresa</label><input type="text" id="cfg-empresa-tel" placeholder="(00) 00000-0000" maxlength="15"></div>
+              <div class="form-group"><label>Endereco da empresa</label><input type="text" id="cfg-empresa-end" placeholder="Rua, numero, bairro, cidade/UF"></div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="salvarDadosEmpresa()">Salvar Dados da Empresa</button>
+          </div>
         </div>
+      </div>
+      <div class="danger-zone mt-16">
+        <div class="danger-zone-title">Zona de Perigo</div>
+        <div class="danger-item"><div><div class="danger-item-label">Limpar movimentacoes</div><div class="danger-item-sub">Remove o historico de entradas/saidas</div></div><button class="btn btn-danger btn-sm" onclick="limpar('movimentacoes')">Limpar</button></div>
+        <div class="danger-item"><div><div class="danger-item-label">Limpar vendas</div><div class="danger-item-sub">Remove o historico de vendas</div></div><button class="btn btn-danger btn-sm" onclick="limpar('vendas')">Limpar</button></div>
+        <div class="danger-item"><div><div class="danger-item-label">Limpar gastos</div><div class="danger-item-sub">Remove todos os lancamentos</div></div><button class="btn btn-danger btn-sm" onclick="limpar('gastos')">Limpar</button></div>
+        <div class="danger-item"><div><div class="danger-item-label">Apagar todos os dados</div><div class="danger-item-sub">Reseta completamente o sistema (mantem o login da empresa)</div></div><button class="btn btn-danger btn-sm" onclick="resetTotal()">Apagar tudo</button></div>
       </div>
     </div>
 
@@ -833,6 +922,127 @@ input[readonly]{opacity:.55;cursor:default}
 'use strict';
 
 // ══════════════════════════════════════════════════════
+// AUTENTICACAO (somente local — sem servidor)
+// conta: { empresa, cnpj, cpf, dono, usuario, senha, criadoEm }
+// sessao: { ok:true, expira: timestamp }
+// ══════════════════════════════════════════════════════
+function getConta(){ return JSON.parse(localStorage.getItem('estoque_conta')||'null'); }
+function setConta(c){ localStorage.setItem('estoque_conta', JSON.stringify(c)); }
+function getSessao(){ return JSON.parse(localStorage.getItem('estoque_sessao')||'null'); }
+function setSessao(s){ localStorage.setItem('estoque_sessao', JSON.stringify(s)); }
+function clearSessao(){ localStorage.removeItem('estoque_sessao'); }
+const SESSAO_DURACAO = 24*60*60*1000; // 24 horas
+
+function sessaoValida(){
+  const s = getSessao();
+  if(!s || !s.ok) return false;
+  if(Date.now() > s.expira){ clearSessao(); return false; }
+  return true;
+}
+
+function switchAuthTab(t){
+  document.getElementById('tab-login-btn').classList.toggle('active',t==='login');
+  document.getElementById('tab-register-btn').classList.toggle('active',t==='register');
+  document.getElementById('auth-login').classList.toggle('active',t==='login');
+  document.getElementById('auth-register').classList.toggle('active',t==='register');
+  document.getElementById('auth-error').classList.remove('show');
+}
+
+function showAuthError(msg){
+  const el=document.getElementById('auth-error');
+  el.textContent=msg; el.classList.add('show');
+}
+
+function maskCNPJ(v){
+  v=v.replace(/\D/g,'').slice(0,14);
+  return v.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
+}
+function maskCPF(v){
+  v=v.replace(/\D/g,'').slice(0,11);
+  return v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+}
+['reg-cnpj','cfg-empresa-cnpj'].forEach(id=>{
+  document.addEventListener('input',e=>{ if(e.target.id===id) e.target.value=maskCNPJ(e.target.value); });
+});
+['reg-cpf','cfg-empresa-cpf'].forEach(id=>{
+  document.addEventListener('input',e=>{ if(e.target.id===id) e.target.value=maskCPF(e.target.value); });
+});
+
+function fazerRegistro(){
+  const empresa=document.getElementById('reg-empresa').value.trim();
+  const cnpj=document.getElementById('reg-cnpj').value.trim();
+  const cpf=document.getElementById('reg-cpf').value.trim();
+  const dono=document.getElementById('reg-dono').value.trim();
+  const usuario=document.getElementById('reg-usuario').value.trim();
+  const senha=document.getElementById('reg-senha').value;
+  const senha2=document.getElementById('reg-senha2').value;
+
+  if(!empresa||!cnpj||!cpf||!dono||!usuario||!senha){ showAuthError('Preencha todos os campos.'); return; }
+  if(senha.length<4){ showAuthError('A senha deve ter pelo menos 4 caracteres.'); return; }
+  if(senha!==senha2){ showAuthError('As senhas nao coincidem.'); return; }
+
+  const conta={ empresa, cnpj, cpf, dono, usuario, senha, telefone:'', endereco:'', criadoEm:new Date().toISOString() };
+  setConta(conta);
+  setSessao({ ok:true, expira: Date.now()+SESSAO_DURACAO });
+  document.getElementById('auth-error').classList.remove('show');
+  iniciarApp();
+}
+
+function fazerLogin(){
+  const usuario=document.getElementById('login-usuario').value.trim();
+  const senha=document.getElementById('login-senha').value;
+  const conta=getConta();
+  if(!conta){ showAuthError('Nenhuma empresa cadastrada. Use a aba "Cadastrar Empresa".'); return; }
+  if(conta.usuario!==usuario || conta.senha!==senha){ showAuthError('Usuario ou senha incorretos.'); return; }
+  setSessao({ ok:true, expira: Date.now()+SESSAO_DURACAO });
+  document.getElementById('auth-error').classList.remove('show');
+  iniciarApp();
+}
+
+function fazerLogout(){
+  if(!confirm('Sair da conta?')) return;
+  clearSessao();
+  location.reload();
+}
+
+function aplicarBrandingEmpresa(){
+  const conta=getConta();
+  if(!conta) return;
+  document.querySelectorAll('#app-logo-name').forEach(el=>el.textContent=conta.empresa.toUpperCase());
+  const un=document.getElementById('sidebar-user-name'); if(un) un.textContent=conta.dono||conta.usuario;
+  const us=document.getElementById('sidebar-user-sub'); if(us) us.textContent='@'+conta.usuario;
+  document.title=conta.empresa+' — Controle de Estoque';
+  // preencher config
+  if(document.getElementById('cfg-empresa-nome')){
+    document.getElementById('cfg-empresa-nome').value=conta.empresa||'';
+    document.getElementById('cfg-empresa-cnpj').value=conta.cnpj||'';
+    document.getElementById('cfg-empresa-cpf').value=conta.cpf||'';
+    document.getElementById('cfg-empresa-dono').value=conta.dono||'';
+    document.getElementById('cfg-empresa-tel').value=conta.telefone||'';
+    document.getElementById('cfg-empresa-end').value=conta.endereco||'';
+  }
+}
+
+function salvarDadosEmpresa(){
+  const conta=getConta(); if(!conta) return;
+  conta.empresa=document.getElementById('cfg-empresa-nome').value.trim()||conta.empresa;
+  conta.cnpj=document.getElementById('cfg-empresa-cnpj').value.trim();
+  conta.cpf=document.getElementById('cfg-empresa-cpf').value.trim();
+  conta.dono=document.getElementById('cfg-empresa-dono').value.trim();
+  conta.telefone=document.getElementById('cfg-empresa-tel').value.trim();
+  conta.endereco=document.getElementById('cfg-empresa-end').value.trim();
+  setConta(conta);
+  aplicarBrandingEmpresa();
+  toast('Dados da empresa atualizados.');
+}
+
+function iniciarApp(){
+  document.getElementById('auth-screen').classList.add('hidden');
+  aplicarBrandingEmpresa();
+  renderDashboard();
+}
+
+// ══════════════════════════════════════════════════════
 // DB
 // produtos:    { id, codigoBase, nome, categoria, minimo, compra, venda, desconto, fornecedorId, criadoEm }
 // unidades:    { id, prodId, codigo, lote, status:'disponivel'|'vendida'|'removida', entradaEm, saidaEm, obs }
@@ -910,11 +1120,7 @@ function gerarCodForn(){
 // Codigo base do produto (prefixo-sequencia tipo dentro do fornecedor)
 function proximoCodBaseProduto(fornId){
   const forn=db.fornecedores.find(f=>f.id===fornId);
-  const prefixo=forn?forn.codigo:'BLP';
-  // Para cada fornecedor, produtos tem codigos BLK-P01, BLK-P02... (base)
-  // As unidades sao BLK-001, BLK-002 (sequencial global por prefixo)
-  // O codigoBase do produto e apenas o prefixo (compartilhado), mas para diferenciar tipos
-  // usamos: prefixo (todos os produtos do mesmo forn compartilham o prefixo, unidades sao sequenciais)
+  const prefixo=forn?forn.codigo:'EST';
   return prefixo;
 }
 
@@ -1457,8 +1663,108 @@ function renderVendas(){
       <td>${v.desconto>0?v.desconto+'%':'—'}</td>
       <td>${fmt(v.total)}</td>
       <td class="${v.lucro>=0?'positive':'negative'}">${fmt(v.lucro)}</td>
+      <td><button class="btn btn-ghost btn-xs" onclick="gerarRecibo('${v.id}')">Recibo</button></td>
     </tr>`;
   });
+}
+
+// ── RECIBO DE VENDA (documento nao fiscal) ───────────
+function gerarRecibo(vendaId){
+  const v=db.vendas.find(x=>x.id===vendaId);
+  if(!v){toast('Venda nao encontrada.','error');return;}
+  const p=db.produtos.find(x=>x.id===v.prodId);
+  const c=db.clientes.find(x=>x.id===v.clienteId);
+  const conta=getConta();
+  const codigos=(v.unidadeIds||[]).map(id=>db.unidades.find(u=>u.id===id)?.codigo||'?');
+  const qtd=codigos.length;
+  const unit=qtd?(v.total/(1-0)/qtd):0; // valor medio aproximado (ja com desconto aplicado no total)
+  const numRecibo='REC-'+v.id.toUpperCase().slice(-8);
+  const dataEmissao=new Date(v.data).toLocaleString('pt-BR');
+
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Recibo ${numRecibo}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Inter,Arial,sans-serif;background:#fff;color:#1a1a1a;padding:46px 52px;max-width:780px;margin:0 auto}
+    @media print{body{padding:18px}}
+    .topo{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1a1a1a;padding-bottom:18px;margin-bottom:24px}
+    .empresa-nome{font-size:21px;font-weight:700;letter-spacing:.02em}
+    .empresa-info{font-size:11.5px;color:#555;margin-top:4px;line-height:1.5}
+    .recibo-tag{text-align:right;font-size:11px;color:#555}
+    .recibo-tag .num{font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:2px}
+    .aviso{background:#fafafa;border:1px solid #ddd;border-left:3px solid #888;padding:8px 12px;font-size:10.5px;color:#666;margin-bottom:24px}
+    .bloco{margin-bottom:22px}
+    .bloco-titulo{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#888;margin-bottom:8px;border-bottom:1px solid #e5e5e5;padding-bottom:4px}
+    .linha{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
+    table{width:100%;border-collapse:collapse;margin-top:6px}
+    th{text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#888;padding:8px 6px;border-bottom:1.5px solid #1a1a1a}
+    td{padding:9px 6px;font-size:13px;border-bottom:1px solid #eee}
+    .totais{margin-top:8px;margin-left:auto;width:260px}
+    .totais .linha{font-size:13px}
+    .totais .final{font-size:16px;font-weight:700;border-top:1.5px solid #1a1a1a;padding-top:8px;margin-top:4px}
+    .assinaturas{display:flex;gap:40px;margin-top:60px}
+    .assinatura{flex:1;text-align:center}
+    .assinatura .linha-ass{border-top:1px solid #1a1a1a;padding-top:6px;font-size:11px;color:#555}
+    .rodape{margin-top:50px;padding-top:14px;border-top:1px solid #e5e5e5;font-size:10px;color:#999;text-align:center}
+  </style></head><body>
+    <div class="topo">
+      <div>
+        <div class="empresa-nome">${conta?.empresa||'Empresa'}</div>
+        <div class="empresa-info">
+          ${conta?.cnpj?('CNPJ: '+conta.cnpj+'<br>'):''}
+          ${conta?.dono?('Responsavel: '+conta.dono+'<br>'):''}
+          ${conta?.telefone?('Tel: '+conta.telefone+'<br>'):''}
+          ${conta?.endereco?(conta.endereco):''}
+        </div>
+      </div>
+      <div class="recibo-tag">
+        <div class="num">${numRecibo}</div>
+        <div>Recibo de Venda</div>
+        <div>${dataEmissao}</div>
+      </div>
+    </div>
+
+    <div class="aviso">Este documento e um recibo de controle interno e nao possui valor fiscal. Nao substitui Nota Fiscal Eletronica (NF-e).</div>
+
+    <div class="bloco">
+      <div class="bloco-titulo">Cliente</div>
+      <div class="linha"><span>Nome</span><strong>${c?.nome||'Consumidor nao identificado'}</strong></div>
+      ${c?.telefone?`<div class="linha"><span>Telefone</span><span>${c.telefone}</span></div>`:''}
+      ${c?.endereco?`<div class="linha"><span>Endereco</span><span>${c.endereco}${c.cidade?(', '+c.cidade):''}</span></div>`:''}
+    </div>
+
+    <div class="bloco">
+      <div class="bloco-titulo">Itens</div>
+      <table>
+        <thead><tr><th>Codigo(s)</th><th>Produto</th><th>Categoria</th><th>Qtd</th><th>Valor unit.</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="font-family:monospace">${codigos.join(', ')||'—'}</td>
+            <td>${p?.nome||'—'}</td>
+            <td>${p?.categoria||'—'}</td>
+            <td>${qtd}</td>
+            <td>${fmt(p?.venda||0)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="totais">
+        <div class="linha"><span>Subtotal</span><span>${fmt((p?.venda||0)*qtd)}</span></div>
+        <div class="linha"><span>Desconto</span><span>${v.desconto>0?v.desconto+'%':'—'}</span></div>
+        <div class="linha final"><span>Total</span><span>${fmt(v.total)}</span></div>
+      </div>
+    </div>
+
+    <div class="assinaturas">
+      <div class="assinatura"><div class="linha-ass">${conta?.empresa||'Empresa'}</div></div>
+      <div class="assinatura"><div class="linha-ass">${c?.nome||'Cliente'}</div></div>
+    </div>
+
+    <div class="rodape">Documento gerado em ${new Date().toLocaleString('pt-BR')} &mdash; ${conta?.empresa||''}</div>
+  </body></html>`;
+
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  window.open(url,'_blank');
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 
 // ── GASTOS ───────────────────────────────────────────
@@ -1771,6 +2077,7 @@ function gerarRelatorio(){
   const incForn=document.getElementById('exp-fornecedores').checked;
   const incMovs=document.getElementById('exp-movs').checked;
   const agora=new Date();
+  const conta=getConta();
   const filtrarData=(lista,campo)=>{
     if(!de&&!ate) return lista;
     return lista.filter(item=>{
@@ -1876,25 +2183,25 @@ function gerarRelatorio(){
     body+=sec('Movimentacoes','#808080',tbl(head,`<tbody>${rows||'<tr><td colspan="5" style="padding:12px;text-align:center;color:#606060">Sem movimentacoes</td></tr>'}</tbody>`));
   }
 
-  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatorio BL Pratas</title>
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatorio ${conta?.empresa||''}</title>
   <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Inter,sans-serif;background:#0a0a0a;color:#e0e0e0;padding:40px 48px;max-width:1100px;margin:0 auto}@media print{body{padding:20px;max-width:100%}}</style>
   </head><body>
   <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;padding-bottom:20px;border-bottom:1px solid #2a2a2a">
-    <div><div style="font-size:28px;font-weight:700;letter-spacing:.08em;background:linear-gradient(135deg,#fff,#aaa,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">BL PRATAS</div>
-    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#7a7a7a;margin-top:2px">Controle de Estoque</div></div>
+    <div><div style="font-size:24px;font-weight:700;letter-spacing:.02em;background:linear-gradient(135deg,#fff,#aaa,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${conta?.empresa||'EMPRESA'}</div>
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#7a7a7a;margin-top:4px">${conta?.cnpj?('CNPJ '+conta.cnpj):'Controle de Estoque'}</div></div>
     <div style="text-align:right;font-size:12px;color:#606060"><div>Relatorio Gerencial</div><div>${agora.toLocaleString('pt-BR')}</div><div>${de?'De '+de+' ate '+(ate||'hoje'):'Periodo completo'}</div></div>
   </div>
   <div style="display:flex;gap:12px;margin-bottom:36px;flex-wrap:wrap">
     ${[['Total de Produtos',db.produtos.length,'#c0c0c0'],['Unidades Disponiveis',totalDisp,'#4ec97f'],['Unidades Vendidas',totalVend,'#e06050'],['Fornecedores',db.fornecedores.length,'#5dade2'],['Clientes',db.clientes.length,'#c39bd3']].map(([l,v,c])=>`<div style="flex:1;min-width:150px;background:#141414;border:1px solid #2a2a2a;border-radius:6px;padding:14px"><div style="font-size:10px;color:#606060;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">${l}</div><div style="font-size:22px;font-weight:300;color:${c}">${v}</div></div>`).join('')}
   </div>
   ${body}
-  <div style="margin-top:40px;padding-top:16px;border-top:1px solid #2a2a2a;font-size:11px;color:#444;text-align:center">BL Pratas — Sistema de Controle de Estoque &mdash; Gerado automaticamente em ${agora.toLocaleString('pt-BR')}</div>
+  <div style="margin-top:40px;padding-top:16px;border-top:1px solid #2a2a2a;font-size:11px;color:#444;text-align:center">${conta?.empresa||''} &mdash; Sistema de Controle de Estoque &mdash; Gerado automaticamente em ${agora.toLocaleString('pt-BR')}</div>
   </body></html>`;
 
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download='BLPratas_Relatorio_'+agora.toISOString().slice(0,10)+'.html';
+  a.href=url;a.download=(conta?.empresa||'Relatorio').replace(/\s+/g,'_')+'_'+agora.toISOString().slice(0,10)+'.html';
   a.click();URL.revokeObjectURL(url);
   toast('Relatorio gerado e baixado.');
 }
@@ -1902,7 +2209,7 @@ function gerarRelatorio(){
 // ── CONFIGURACOES ────────────────────────────────────
 function salvarConfig(){db.config.minimo=parseInt(document.getElementById('cfg-minimo').value)||3;save();toast('Configuracao salva.');}
 function limpar(k){const l={movimentacoes:'movimentacoes',vendas:'vendas',gastos:'gastos'};if(!confirm('Limpar '+l[k]+'?'))return;db[k]=[];save();toast('Limpo.','warn');}
-function resetTotal(){if(!confirm('APAGAR TUDO?'))return;if(!confirm('Confirmar?'))return;localStorage.removeItem('blpratas_v4');location.reload();}
+function resetTotal(){if(!confirm('APAGAR TUDO (estoque, vendas, gastos, clientes, fornecedores)?'))return;if(!confirm('Confirmar? O login da empresa sera mantido.'))return;localStorage.removeItem('blpratas_v4');location.reload();}
 
 // ── TABS ─────────────────────────────────────────────
 function switchTab(btn,pid){
@@ -1931,7 +2238,7 @@ function blkLetras(e){const ok=['Backspace','Delete','Tab','ArrowLeft','ArrowRig
 function aplicarMascaraTel(id){const el=document.getElementById(id);if(!el)return;el.addEventListener('input',mascaraTel);el.addEventListener('keydown',blkLetras);}
 
 // ── INIT ─────────────────────────────────────────────
-['forn-tel','cli-tel'].forEach(aplicarMascaraTel);
+['forn-tel','cli-tel','cfg-empresa-tel'].forEach(aplicarMascaraTel);
 if(document.getElementById('cfg-minimo')) document.getElementById('cfg-minimo').value=db.config?.minimo||3;
 // Datas padrao para exportacao
 const _hj=new Date();
@@ -1939,7 +2246,22 @@ document.getElementById('exp-de').value=_hj.getFullYear()+'-'+(_hj.getMonth()+1)
 document.getElementById('exp-ate').value=_hj.toISOString().slice(0,10);
 // Exportar na tabela de paginas
 pageTitles.exportar='Exportar Relatorio';
-renderDashboard();
+
+// ── BOOT: ──────────────────────
+(function boot(){
+  const conta=getConta();
+  if(conta && sessaoValida()){
+    iniciarApp();
+  } else {
+    if(!conta){
+      document.getElementById('auth-login-foot').textContent='Nenhuma empresa cadastrada neste dispositivo ainda. Use a aba "Cadastrar Empresa".';
+      switchAuthTab('register');
+    } else {
+      document.getElementById('auth-login-foot').textContent='Sua sessao expirou. Faca login novamente.';
+      switchAuthTab('login');
+    }
+  }
+})();
 </script>
 </body>
 </html>
