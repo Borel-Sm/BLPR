@@ -23,8 +23,8 @@ Painel principal com indicadores importantes:
 
 Quantidade total de peças em estoque
 Valor total investido em estoque
-Vendas do mês
-Lucro do mês
+Vendas do mês.
+Lucro do mês 
 Alertas de estoque
 Últimas movimentações
 Produtos mais vendidos
